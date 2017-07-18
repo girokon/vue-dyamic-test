@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello world!</title>
+
+
+
+</head>
+<body>
+<h1>Hello World!</h1>
+
+<div id="tableApp">
+    <table >
+        <tr>
+            <td>id</td>
+            <td>name</td>
+            <td>action</td>
+        </tr>
+
+        <tr>
+            <td>1</td>
+            <td>Alice</td>
+            <td><a href="#" v-on:click="remove">Delete</a></td>
+        </tr>
+
+
+    </table>
+</div>
+
+</body>
+
+
+<script src="https://unpkg.com/vue"></script>
+
+
+<script>
+
+    let el = document.querySelector("#tableApp");
+
+    function getClass(template) {
+        return Vue.extend({
+            delimiters: ['{', '}'],
+            template: template,
+            methods: {
+                remove: function () {
+                    fetch('http://localhost:3001/?table=1').then(function (data) {
+                        return data.text();
+                    })
+                        .then(function (text) {
+                            remount(getClass(text), remount.app.$el);
+                        })
+                }
+            }
+
+        });
+    }
+
+    function remount(App, el) {
+
+        let app = new App().$mount(el);
+
+        console.log('app', app);
+
+        remount.app = app;
+    }
+
+    remount(getClass(el.innerHTML), el);
+</script>
+
+</html>
