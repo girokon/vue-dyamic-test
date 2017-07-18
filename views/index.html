@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Hello world!</title>
-
 
 
 </head>
 <body>
 <h1>Hello World!</h1>
 
-<div id="tableApp">
-    <table >
+<div id="app">
+    Loading
+</div>
+
+<script type="text/x-template" id="appTemplate">
+    <data-table></data-table>
+</script>
+
+<script type="text/x-template" id="tableApp">
+    <table>
         <tr>
             <td>id</td>
             <td>name</td>
@@ -26,7 +33,7 @@
 
 
     </table>
-</div>
+</script>
 
 </body>
 
@@ -36,36 +43,35 @@
 
 <script>
 
-    let el = document.querySelector("#tableApp");
+    function getTableClass(template) {
+        return Vue.component('data-table', {
 
-    function getClass(template) {
-        return Vue.extend({
-            delimiters: ['{', '}'],
             template: template,
             methods: {
-                remove: function () {
-                    fetch('http://localhost:3001/?table=1').then(function (data) {
+                remove() {
+                    fetch('http://localhost:3001/?table=1').then((data) => {
                         return data.text();
                     })
-                        .then(function (text) {
-                            remount(getClass(text), remount.app.$el);
+                        .then((text) => {
+                            let Table = getTableClass(text);
+                            let table = new Table();
+
+                            table.$mount(this.$el);
+
                         })
                 }
             }
-
         });
     }
 
-    function remount(App, el) {
+    let table = getTableClass('#tableApp');
 
-        let app = new App().$mount(el);
+    console.log('table', table);
 
-        console.log('app', app);
-
-        remount.app = app;
-    }
-
-    remount(getClass(el.innerHTML), el);
+    let app = new Vue({
+        el: '#app',
+        template: '#appTemplate'
+    });
 </script>
 
 </html>
